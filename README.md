@@ -121,6 +121,54 @@ Future state
 - `curl -X POST http://localhost:8080/tasks/cache-warm`
 - `microk8s kubectl -n dev logs deploy/release-api`
 
+## Sample Run Output
+
+These are real outputs captured from the project running on the remote Ubuntu laptop with `MicroK8s`.
+
+### Kubernetes Status
+
+```bash
+$ microk8s kubectl -n dev get pods,svc,deploy
+NAME                               READY   STATUS    RESTARTS   AGE
+pod/release-api-58d9d8b4cc-l6295   1/1     Running   0          7h23m
+
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/release-api   ClusterIP   10.152.183.171   <none>        80/TCP    9h
+
+NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/release-api   1/1     1            1           9h
+```
+
+### Version Endpoint
+
+```bash
+$ curl http://localhost:8080/version
+{"appName":"release-api","environment":"dev","version":"dev","gitSha":"local","buildTime":"2026-03-14T08:02:56Z"}
+```
+
+### Operational Task Trigger
+
+```bash
+$ curl -X POST http://localhost:8080/tasks/cache-warm
+{"status":"accepted","task":"cache-warm","executedAt":"2026-03-14T17:43:21Z"}
+```
+
+### Application Logs
+
+```bash
+$ microk8s kubectl -n dev logs deploy/release-api | tail -10
+2026/03/14 17:42:58 method=GET path=/readyz remote=192.168.86.27:59796
+2026/03/14 17:43:05 method=GET path=/healthz remote=192.168.86.27:44802
+2026/03/14 17:43:08 method=GET path=/readyz remote=192.168.86.27:44810
+2026/03/14 17:43:15 method=GET path=/healthz remote=192.168.86.27:50862
+2026/03/14 17:43:16 method=GET path=/version remote=127.0.0.1:35260
+2026/03/14 17:43:18 method=GET path=/readyz remote=192.168.86.27:50878
+2026/03/14 17:43:21 method=POST path=/tasks/cache-warm remote=127.0.0.1:34044
+2026/03/14 17:43:21 task=cache-warm env=dev source=api
+2026/03/14 17:43:25 method=GET path=/healthz remote=192.168.86.27:51818
+2026/03/14 17:43:28 method=GET path=/readyz remote=192.168.86.27:51830
+```
+
 ## Next Steps
 
 - Push container images to `GHCR`
