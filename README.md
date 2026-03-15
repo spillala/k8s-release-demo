@@ -143,6 +143,40 @@ Suggested caption for the application detail screenshot:
 
 > Application graph for `release-api-dev`, including Kubernetes resources created from the Helm chart and reconciled by Argo CD.
 
+### Screenshots
+
+Add your screenshots to `docs/images/` in this repository, then they will render on GitHub here.
+
+#### Argo CD Applications View
+
+![Argo CD applications view](docs/images/argocd-applications-view.png)
+
+#### Argo CD Application Graph
+
+![Argo CD application graph](docs/images/argocd-application-graph.png)
+
+#### Argo CD Deployment Diff
+
+![Argo CD deployment diff](docs/images/argocd-deployment-diff.png)
+
+### Current Sync Issue
+
+Argo CD is currently reporting the application as `Healthy` but `OutOfSync`.
+
+From the deployment diff, the remaining drift is the `app.kubernetes.io/instance` label:
+
+- live deployment uses `release-api-dev`
+- desired deployment uses `release-api`
+
+This usually happens when a Helm release was first created with one release name and later managed by Argo CD with a different rendered release identity. The workload is still running correctly, but Argo CD cannot fully reconcile until the live deployment matches the desired selector and pod-template labels.
+
+This is still valuable portfolio evidence because it shows:
+
+- Argo CD is installed and connected to GitHub
+- the app is being reconciled through GitOps
+- the workload is healthy in Kubernetes
+- there is a real operational drift/debugging scenario being investigated
+
 ## Architecture
 
 ```text
