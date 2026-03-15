@@ -98,6 +98,51 @@ curl -X POST http://localhost:8080/tasks/cache-warm
 - The target namespace is `dev`
 - CI validates the project on each push to `main`
 
+## Argo CD GitOps Demo
+
+Argo CD is installed in the local `MicroK8s` cluster and manages the `release-api-dev` application from this GitHub repository.
+
+### What This Demonstrates
+
+- GitOps-style application management on Kubernetes
+- Argo CD watching the repo and reconciling desired state from `main`
+- a real app graph with `ConfigMap`, `Secret`, `Service`, `Deployment`, `ReplicaSet`, `Pod`, and `Ingress`
+- a workflow that is much closer to production platform engineering than a manual `kubectl apply` demo
+
+### Argo CD Application
+
+- Application name: `release-api-dev`
+- Namespace: `argocd`
+- Destination namespace: `dev`
+- Source repo: `https://github.com/spillala/k8s-release-demo.git`
+- Chart path: `deploy/helm/release-api`
+- Target revision: `main`
+
+### Current Argo CD Status
+
+The application is currently:
+
+- `Healthy`
+- `OutOfSync`
+- `Auto Sync enabled`
+
+This is still useful portfolio evidence because it proves:
+
+- Argo CD is installed and working
+- the application is connected to GitHub
+- the release is visible and managed through the Argo CD UI
+- the workload is running in the cluster while Argo CD reports remaining drift to be resolved
+
+### Screenshot Evidence
+
+Suggested caption for the Argo CD screenshot:
+
+> Argo CD managing the `release-api-dev` application on a local MicroK8s cluster, showing GitOps tracking from the `main` branch.
+
+Suggested caption for the application detail screenshot:
+
+> Application graph for `release-api-dev`, including Kubernetes resources created from the Helm chart and reconciled by Argo CD.
+
 ## Architecture
 
 ```text
@@ -112,6 +157,17 @@ Future state
   -> GitHub Actions CI
   -> registry publish
   -> Argo CD sync into MicroK8s
+```
+
+## GitOps Architecture
+
+```text
+GitHub repo (main branch)
+  -> Argo CD Application in argocd namespace
+  -> Helm chart at deploy/helm/release-api
+  -> desired state rendered by Argo CD
+  -> release-api deployed into dev namespace
+  -> health and sync visible in Argo CD UI
 ```
 
 ## Suggested Demo Evidence
