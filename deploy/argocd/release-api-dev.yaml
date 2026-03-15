@@ -10,6 +10,7 @@ spec:
     targetRevision: main
     path: deploy/helm/release-api
     helm:
+      releaseName: release-api
       valueFiles:
         - values-dev.yaml
   destination:
